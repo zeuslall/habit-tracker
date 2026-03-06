@@ -107,10 +107,11 @@ useEffect(() => {
 ```jsx
 return (
   <Card>
-    <Input placeholder="Add a new habit" />
+    <Input placeholder="Add habit" />
     <ul>
-      {/* Habit list items will be dynamically generated here */}
+      {/* Habit items will be listed here */}
     </ul>
+    <Button onClick={() => {}}>Add Habit</Button>
   </Card>
 );
 ```

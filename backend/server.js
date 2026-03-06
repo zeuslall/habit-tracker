@@ -10,51 +10,51 @@ app.use(express.json())
 let habits = []
 
 app.get("/health",(req,res)=>{
-    res.json({status:"ok"})
+  res.json({status:"ok"})
 })
 
 app.get("/habits",(req,res)=>{
-    res.json(habits)
+  res.json(habits)
 })
 
 app.post("/habits",(req,res)=>{
 
-    const habit = {
-        id: Date.now(),
-        name: req.body.name,
-        completed:false
-    }
+  const habit = {
+    id: Date.now(),
+    name: req.body.name,
+    completed:false
+  }
 
-    habits.push(habit)
+  habits.push(habit)
 
-    res.status(201).json(habit)
+  res.status(201).json(habit)
 
 })
 
 app.put("/habits/:id",(req,res)=>{
 
-    const id = Number(req.params.id)
+  const id = Number(req.params.id)
 
-    habits = habits.map(h =>
-        h.id === id ? {...h,completed:req.body.completed} : h
-    )
+  habits = habits.map(h =>
+    h.id === id ? {...h,completed:req.body.completed} : h
+  )
 
-    res.json({success:true})
+  res.json({success:true})
 
 })
 
 app.delete("/habits/:id",(req,res)=>{
 
-    const id = Number(req.params.id)
+  const id = Number(req.params.id)
 
-    habits = habits.filter(h => h.id !== id)
+  habits = habits.filter(h => h.id !== id)
 
-    res.json({success:true})
+  res.json({success:true})
 
 })
 
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT,()=>{
-    console.log("Server running on port",PORT)
+  console.log("Server running on port",PORT)
 })
