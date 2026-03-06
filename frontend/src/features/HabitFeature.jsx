@@ -1,118 +1,96 @@
-
-```javascript
-import React from "react";
-import axios from "axios";
-import { Button, Input, Card } from "../components/ui";
-```
+import React, { useState, useEffect } from "react"
 
 export default function HabitFeature() {
 
-```javascript
-const [habits, setHabits] = useState([]);
-const [newHabit, setNewHabit] = useState("");
-```
+  const [habits, setHabits] = useState([])
+  const [newHabit, setNewHabit] = useState("")
 
+  async function loadHabits() {
 
-const API = "http://localhost:3000"
+    const res = await fetch("/habits")
 
-async function loadHabits() {
-
-  try {
-
-    const res = await fetch(`${API}/habits`)
     const data = await res.json()
 
     setHabits(data)
 
-  } catch (err) {
-
-    console.error(err)
-
   }
 
-}
+  async function addHabit() {
 
-async function addHabit() {
+    if (!newHabit) return
 
-  if (!newHabit.trim()) return
-
-  try {
-
-    const res = await fetch(`${API}/habits`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newHabit })
+    await fetch("/habits",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ name:newHabit })
     })
 
-    const data = await res.json()
-
-    setHabits([...habits, data])
     setNewHabit("")
 
-  } catch (err) {
-
-    console.error(err)
+    loadHabits()
 
   }
 
-}
+  async function toggleHabit(id,completed){
 
-async function toggleHabit(id, completed) {
-
-  try {
-
-    await fetch(`${API}/habits/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
+    await fetch(`/habits/${id}`,{
+      method:"PUT",
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ completed: !completed })
     })
 
-    setHabits(
-      habits.map(h =>
-        h.id === id ? { ...h, completed: !completed } : h
-      )
-    )
-
-  } catch (err) {
-
-    console.error(err)
+    loadHabits()
 
   }
 
-}
+  useEffect(()=>{
+    loadHabits()
+  },[])
 
-async function deleteHabit(id) {
+  return (
 
-  try {
+    <div style={{maxWidth:600,margin:"40px auto",fontFamily:"sans-serif"}}>
 
-    await fetch(`${API}/habits/${id}`, {
-      method: "DELETE"
-    })
+      <h1>Habit Tracker</h1>
 
-    setHabits(habits.filter(h => h.id !== id))
+      <div style={{display:"flex",gap:10}}>
 
-  } catch (err) {
+        <input
+          value={newHabit}
+          onChange={e=>setNewHabit(e.target.value)}
+          placeholder="New habit"
+        />
 
-    console.error(err)
+        <button onClick={addHabit}>
+          Add
+        </button>
 
-  }
+      </div>
 
-}
+      <ul style={{marginTop:20}}>
 
-useEffect(() => {
-  loadHabits()
-}, [])
+        {habits.map(habit=>(
+          <li key={habit.id}>
 
+            <label>
 
-```jsx
-return (
-  <Card>
-    <Input placeholder="Add a new habit" />
-    <ul>
-      {/* Habit items will be added here dynamically */}
-    </ul>
-  </Card>
-);
-```
+              <input
+                type="checkbox"
+                checked={habit.completed}
+                onChange={()=>toggleHabit(habit.id,habit.completed)}
+              />
+
+              {habit.name}
+
+            </label>
+
+          </li>
+        ))}
+
+      </ul>
+
+    </div>
+
+  )
 
 }
